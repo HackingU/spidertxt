@@ -16,7 +16,11 @@ def connect(url):
     exit(1)
 
 def getRobots(request):
-  None
-
+  if request:
+    robots = [line for line in filter(None, request.split("\n"))]
+    return robots
+  else:
+    exit('robots.txt unavailable')
 if __name__ == '__main__':
-  None
+  robots = getRobots(connect('https://hackingu.net'))
+  print(robots)
