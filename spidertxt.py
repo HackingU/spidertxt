@@ -1,6 +1,13 @@
 # A robots.txt based Info Gathering Crawler
 
 import requests
+import sys
+
+def getUrl(args):
+  if len(args) > 1:
+    return args[1]
+  else: 
+    exit('No URL found.\nPlease specify a valid URL.')
 
 def connect(url):
   try:
