@@ -34,7 +34,6 @@ def tryRobotsLines(robots, url):
       item = item[firstIndex+1:lastIndex]
       req = requests.get(url + item)
       print(f'{url + item} - {req.status_code}')
- 
 
 def getRobots(request):
   if request:
@@ -44,7 +43,10 @@ def getRobots(request):
   else:
     exit('robots.txt unavailable')
 
+def main():
+  url = getUrl(sys.argv)
+  robots = getRobots(connect(url))
+  tryRobotsLines(robots, url)
+
 if __name__ == '__main__':
-  robots = getRobots(connect('https://hackingu.net'))
-  print()
-  tryRobotsLines(robots, 'https://hackingu.net')
+  main()
