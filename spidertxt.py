@@ -12,14 +12,14 @@ def getUrl(args):
 def fixUrl(url):
 	if url[-1] != '/':
 		url += '/'
-	if not url.startswith('http://'):
-		url = 'http://' + url
+	if not url.startswith('http://') or url.startswith('https://'):
+		url = 'http://' + url[8:]
 	return url
 
 def connect(url):
 	try:
+		print(url)
 		req = requests.get(url + 'robots.txt')
-		# print(req.history[0].headers['Location'])
 		if req.status_code == 200:
 			return req.text
 		else:
@@ -37,7 +37,9 @@ def tryRobotsLines(robots, url):
 			lastIndex = int(item.rindex('/'))
 			item = item[firstIndex+1:lastIndex]
 			req = requests.get(url + item)
-			print(f'{url + item} - {req.status_code}')
+			print(f'Item: {url + item} - {req.status_code}')
+			if (req.history) and (req.history[0].status_code == 301 or req.history[0].status_code == 302):
+				print(f"Redirected from: {req.history[0].headers['Location']} - {req.history[0].status_code}")
 
 def getRobots(request):
 	if request:
