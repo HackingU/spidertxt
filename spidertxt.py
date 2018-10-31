@@ -19,9 +19,8 @@ def getUrl(args):
 def fixUrl(url):
 	if url[-1] != '/':
 		url += '/'
-	if url.startswith('https://'):
-		url = 'http://' + url[8:]
-	if not url.startswith('http://'):
+	if not url.startswith('http://') and url.startswith('https://'):
+		url = url.replace('https://', '')
 		url = 'http://' + url
 	return url
 
