@@ -2,6 +2,13 @@
 
 import requests
 import sys
+from os import system, name
+
+def clear():
+	if name == 'nt':
+		system('cls')
+	else:
+		system('clear')
 
 def getUrl(args):
 	if len(args) > 1:
@@ -26,7 +33,7 @@ def connect(url):
 		else:
 			exit('robots.txt unavailable')
 	except requests.exceptions.RequestException as e:
-		print('Error: %s' % e)
+		print(f'Error: {e}')
 		exit(1)
 
 def tryRobotsLines(robots, url):
@@ -38,9 +45,11 @@ def tryRobotsLines(robots, url):
 			lastIndex = int(robot.rindex('/'))
 			robot = robot[firstIndex+1:lastIndex]
 			req = requests.get(url + robot)
-			print(f'Item: {url + robot} - {req.status_code}')
-			if (req.history) and (req.history[0].status_code == 301 or req.history[0].status_code == 302):
-				print(f"Redirected from: {req.history[0].headers['Location']} - {req.history[0].status_code}")
+			print(f'Item: {url + robot} - Status code: {req.status_code}')
+
+			# Not necessary to show history because can't fix http/https bug
+			# if (req.history) and (req.history[0].status_code == 301 or req.history[0].status_code == 302):
+			# 	print(f"Redirected from: {req.history[0].headers['Location']} - Status code: {req.history[0].status_code}")
 			content = req.text
 			title = everything_between(content,'<title>','</title>')
 			if title.startswith('Index of '):
@@ -49,7 +58,7 @@ def tryRobotsLines(robots, url):
 def getRobots(request):
 	if request:
 		robots = [line for line in filter(None, request.split("\n"))]
-		print(robots)
+		print(f'{robots}\n')
 		return robots
 	else:
 		print('robots.txt unavailable')
@@ -72,8 +81,10 @@ def listIndexOfContent(url):
 			print(f'{item}')
 
 def main():
+	clear()
 	url = getUrl(sys.argv)
 	url = fixUrl(url)
+	print(f'URL: {url}\n')
 	robots = getRobots(connect(url))
 	tryRobotsLines(robots, url)
 
