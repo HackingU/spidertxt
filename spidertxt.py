@@ -30,17 +30,21 @@ def connect(url):
 		exit(1)
 
 def tryRobotsLines(robots, url):
-	for item in robots:
-		if item[-1] != '/':
-			item += '/'
-		if item.startswith('Disallow'):
-			firstIndex = int(item.index('/'))
-			lastIndex = int(item.rindex('/'))
-			item = item[firstIndex+1:lastIndex]
-			req = requests.get(url + item)
-			print(f'Item: {url + item} - {req.status_code}')
+	for robot in robots:
+		if robot[-1] != '/':
+			robot += '/'
+		if robot.startswith('Disallow'):
+			firstIndex = int(robot.index('/'))
+			lastIndex = int(robot.rindex('/'))
+			robot = robot[firstIndex+1:lastIndex]
+			req = requests.get(url + robot)
+			print(f'Item: {url + robot} - {req.status_code}')
 			if (req.history) and (req.history[0].status_code == 301 or req.history[0].status_code == 302):
 				print(f"Redirected from: {req.history[0].headers['Location']} - {req.history[0].status_code}")
+			content = req.text
+			title = everything_between(content,'<title>','</title>')
+			if title.startswith('Index of '):
+				listIndexOfContent(url + robot)
 
 def getRobots(request):
 	if request:
@@ -48,15 +52,30 @@ def getRobots(request):
 		print(robots)
 		return robots
 	else:
-		exit('robots.txt unavailable')
+		print('robots.txt unavailable')
 
+def everything_between(content, begin, end):
+    idx1=content.find(begin)
+    idx2=content.find(end,idx1)
+    return content[idx1+len(begin):idx2].strip()
+
+def listIndexOfContent(url):
+	req = requests.get(url)
+	req_text = req.text
+	tag_begin = '<a href="'
+	tag_end = '">'
+	req_text_lines = req_text.split('\n')
+	for line in req_text_lines:
+		line = line.strip()
+		if tag_begin in line:
+			item = everything_between(line,tag_begin,tag_end)
+			print(f'{item}')
 
 def main():
 	url = getUrl(sys.argv)
 	url = fixUrl(url)
 	robots = getRobots(connect(url))
 	tryRobotsLines(robots, url)
-
 
 if __name__ == '__main__':
 	main()
