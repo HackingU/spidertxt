@@ -12,10 +12,10 @@ def getUrl(args):
 def fixUrl(url):
 	if url[-1] != '/':
 		url += '/'
-	if not url.startswith('http://'):
-		url = 'http://' + url
 	if url.startswith('https://'):
 		url = 'http://' + url[8:]
+	elif not url.startswith('http://'):
+		url = 'http://' + url
 	return url
 
 def connect(url):
