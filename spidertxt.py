@@ -14,7 +14,7 @@ def fixUrl(url):
 		url += '/'
 	if url.startswith('https://'):
 		url = 'http://' + url[8:]
-	elif not url.startswith('http://'):
+	if not url.startswith('http://'):
 		url = 'http://' + url
 	return url
 
